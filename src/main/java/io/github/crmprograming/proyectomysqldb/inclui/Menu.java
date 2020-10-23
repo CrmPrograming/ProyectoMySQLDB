@@ -16,7 +16,7 @@ public abstract class Menu {
 		System.out.printf("#%22s#%n", "");
 		System.out.println("########################");
 		System.out.println();
-		System.out.println("- Autor: César Ravelo Martínez");
+		System.out.println("- Autor: César Ravelo Martínez\n");
 		
 		System.out.println("1) Visualizar todos los datos de los equipos");
 		System.out.println("2) Insertar equipo");
@@ -41,9 +41,9 @@ public abstract class Menu {
 					String[] _error = {""};
 					ArrayList<Equipo> listado = Conexion.obtenerListadoEquipos(_error);
 					
-					if (_error[0].equals("")) {
+					if (_error[0].equals(""))
 						mostrarTablaEquipos(listado);
-					} else
+					else
 						System.out.println(_error[0]);
 				break;
 	
@@ -58,17 +58,19 @@ public abstract class Menu {
 	
 	private static void mostrarTablaEquipos(ArrayList<Equipo> listado) {
 		int i = 0;
-		final String CABECERA = "codEquipo | nomEquipo | liga | localidad | internacional";
 		
 		for (i = 0; i < listado.size(); i++) {
+			Equipo actual = listado.get(i);
 			if (i % 5 == 0)
-				System.out.println(CABECERA);
-			System.out.print(listado.get(i).getCodEquipo() + " ");
-			System.out.print(listado.get(i).getNomEquipo() + " ");
-			System.out.print(listado.get(i).getLiga() + " ");
-			System.out.print(listado.get(i).getLocalidad() + " ");
-			System.out.println((listado.get(i).isInternacional())? "Sí" : "No");
+				System.out.printf("%n%n%11s | %-40s | %-50s | %-60s | %-15s%n", "codEquipo", "nomEquipo", "nomLiga", "localidad", "internacional");
+			System.out.printf("%n%11s | %-40s | %-50s | %-60s | %-15s ",
+					actual.getCodEquipo(),
+					actual.getNomEquipo(),
+					actual.getLiga(),
+					actual.getLocalidad(),
+					(actual.isInternacional())? "Sí" : "No");
 		}
+		System.out.println();
 	}
 	
 	public static void iniciar() {
