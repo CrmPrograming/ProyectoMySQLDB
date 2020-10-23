@@ -5,6 +5,8 @@ import java.util.Scanner;
 
 import io.github.crmprograming.proyectomysqldb.conexion.Conexion;
 import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
+import io.github.crmprograming.proyectomysqldb.modelo.Liga;
+import io.github.crmprograming.proyectomysqldb.modelo.Registro;
 
 public abstract class Menu {
 	
@@ -24,13 +26,19 @@ public abstract class Menu {
 		System.out.println("4) Modificar los datos de un equipo");
 		System.out.println("5) Funciones adicionales");
 		System.out.println("0) Salir");
-		System.out.print("\n > Introduzca la opción a ejecutar: ");
+		System.out.print("\n> Introduzca la opción a ejecutar: ");
 	}
 	
 	private static void gestionarMenuInicial() {
+		ArrayList<Registro> listado;
 		Scanner in = new Scanner(System.in);
 		int opc = -1;
+		String[] _error = new String[] {""};
+		String nomEquipo, codLiga, localidad;
+		boolean internacional;
+		
 		do {
+			_error = new String[] {""};
 			mostrarMenuInicial();
 			opc = in.nextInt();
 			
@@ -38,13 +46,50 @@ public abstract class Menu {
 				case 0:
 				break;
 				case 1: // Mostrar listado
-					String[] _error = {""};
-					ArrayList<Equipo> listado = Conexion.obtenerListadoEquipos(_error);
+					listado = Conexion.obtenerListadoEquipos(_error);
 					
 					if (_error[0].equals(""))
 						mostrarTablaEquipos(listado);
-					else
-						System.out.println(_error[0]);
+				break;
+				
+				case 2: // Insertar equipo
+					opc = -1;
+					do {
+						mostrarInsertarEquipo();
+						opc = in.nextInt();
+						
+						switch (opc) {
+							case 0:
+							break;
+							case 1: // Pedir datos del equipo
+								in.nextLine();
+								
+								System.out.print("> Nombre del equipo (LIMIT 40): ");
+								nomEquipo = in.nextLine();
+								System.out.print("> Código de la liga (LIMIT 5): ");
+								codLiga = in.nextLine();
+								System.out.print("> Localidad del equipo (LIMIT 60): ");
+								localidad = in.nextLine();
+								System.out.print("> ¿El equipo es internacional? (s|n): ");
+								internacional = in.nextLine().toUpperCase().equals("S");
+								System.out.println();
+								
+								if (Conexion.insertarEquipo(nomEquipo, codLiga, localidad, internacional, _error)) {
+									System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas");
+								} else {
+									System.out.println("No se pudo dar de alta el equipo " + nomEquipo + " sin problemas");
+								}
+							break;
+							case 2: // Mostrar ligas y sus códigos
+								listado = Conexion.obtenerListadoLigas(_error);
+								
+								if (_error[0].equals(""))
+									mostrarTablaLigas(listado);
+							break;
+						}
+						
+					} while (opc != 0 && _error[0].equals(""));
+					opc = 2;
 				break;
 	
 				default:
@@ -52,15 +97,18 @@ public abstract class Menu {
 				break;
 			}
 			
+			if (!_error[0].equals(""))
+				System.out.println(_error[0]);
+			
 		} while(opc != 0);
 		in.close();
 	}
 	
-	private static void mostrarTablaEquipos(ArrayList<Equipo> listado) {
-		int i = 0;
+	private static void mostrarTablaEquipos(ArrayList<Registro> listado) {
+		int i;
 		
 		for (i = 0; i < listado.size(); i++) {
-			Equipo actual = listado.get(i);
+			Equipo actual = (Equipo) listado.get(i);
 			if (i % 5 == 0)
 				System.out.printf("%n%n%11s | %-40s | %-50s | %-60s | %-15s%n", "codEquipo", "nomEquipo", "nomLiga", "localidad", "internacional");
 			System.out.printf("%n%11s | %-40s | %-50s | %-60s | %-15s ",
@@ -69,6 +117,26 @@ public abstract class Menu {
 					actual.getLiga(),
 					actual.getLocalidad(),
 					(actual.isInternacional())? "Sí" : "No");
+		}
+		System.out.println();
+	}
+	
+	private static void mostrarInsertarEquipo() {
+		System.out.println();
+		System.out.println("1) Dar datos del equipo");
+		System.out.println("2) Mostrar ligas con sus identificadores");
+		System.out.println("0) Cancelar operación");
+		System.out.print("\n> Introduzca la opción a ejecutar: ");
+	}
+	
+	private static void mostrarTablaLigas(ArrayList<Registro> listado) {
+		int i;
+		
+		for (i = 0; i < listado.size(); i++) {
+			Liga actual = (Liga) listado.get(i);
+			if (i % 5 == 0)
+				System.out.printf("%n%n%10s | %-50s", "codLiga", "nomLiga");
+			System.out.printf("%n%n%10s | %-50s", actual.getCodigo(), actual.getNombre());
 		}
 		System.out.println();
 	}

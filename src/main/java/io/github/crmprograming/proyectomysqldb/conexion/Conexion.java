@@ -2,12 +2,15 @@ package io.github.crmprograming.proyectomysqldb.conexion;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
 import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
+import io.github.crmprograming.proyectomysqldb.modelo.Liga;
+import io.github.crmprograming.proyectomysqldb.modelo.Registro;
 
 public abstract class Conexion {
 	
@@ -32,8 +35,8 @@ public abstract class Conexion {
 		return con;
 	}
 	
-	public static ArrayList<Equipo> obtenerListadoEquipos(String[] _error) {
-		ArrayList<Equipo> listado = new ArrayList<Equipo>();
+	public static ArrayList<Registro> obtenerListadoEquipos(String[] _error) {
+		ArrayList<Registro> listado = new ArrayList<Registro>();
 		Connection con = conectar(_error);
 		
 		if (_error[0].equals("")) {			
@@ -57,6 +60,59 @@ public abstract class Conexion {
 		}
 		
 		return listado;
+	}
+	
+	public static ArrayList<Registro> obtenerListadoLigas(String[] _error) {
+		ArrayList<Registro> listado = new ArrayList<Registro>();
+		Connection con = conectar(_error);
+		
+		if (_error[0].equals("")) {
+			try {
+				Statement stmt = con.createStatement();
+				ResultSet rows = stmt.executeQuery("SELECT * FROM ligas");
+				while (rows.next()) {
+					listado.add(new Liga(rows.getString("codLiga"), rows.getString("nomLiga")));
+				}
+				
+				con.close();
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al construir el listado de equipos: " + e.getLocalizedMessage();
+			}
+		}
+		
+		return listado;
+	}
+	
+	public static boolean insertarEquipo(String nomEquipo, String codLiga, String localidad, boolean internacional, String[] _error) {
+		boolean result = true;
+		Connection con = conectar(_error);
+		
+		if (result = _error[0].equals("")) {
+			try {
+				// Comprobamos primero si la liga dada existe				
+				ResultSet rows;
+				PreparedStatement stmt = con.prepareStatement("SELECT * FROM ligas WHERE codLiga = ?");
+				stmt.setString(1, codLiga);
+				rows = stmt.executeQuery();
+				
+				if (rows.next()) {
+					stmt = con.prepareStatement("INSERT INTO equipos VALUES (NULL, ?, ?, ?, ?)");
+					stmt.setString(1, nomEquipo);
+					stmt.setString(2, codLiga);
+					stmt.setString(3, localidad);
+					stmt.setBoolean(4, internacional);
+					result = (stmt.executeUpdate() > 0);
+				} else {
+					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga llamada " + codLiga;
+				}				
+				con.close();
+			} catch (SQLException e) {
+				result = false;
+				_error[0] = "Se ha producido un error al dar de alta el equipo: " + e.getLocalizedMessage();
+			}
+		}
+		
+		return result;
 	}
 
 }

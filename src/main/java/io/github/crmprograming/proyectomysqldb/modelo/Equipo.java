@@ -1,6 +1,6 @@
 package io.github.crmprograming.proyectomysqldb.modelo;
 
-public class Equipo {
+public class Equipo extends Registro {
 	
 	private int codEquipo;
 	private String nomEquipo;
