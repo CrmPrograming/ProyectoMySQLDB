@@ -75,11 +75,8 @@ public abstract class Menu {
 								internacional = in.nextLine().toUpperCase().equals("S");
 								System.out.println();
 								
-								if (Conexion.insertarEquipo(nomEquipo, codLiga, localidad, internacional, _error)) {
+								if (Conexion.insertarEquipo(nomEquipo, codLiga, localidad, internacional, _error))
 									System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas");
-								} else {
-									System.out.println("No se pudo dar de alta el equipo " + nomEquipo + " sin problemas");
-								}
 							break;
 							case 2: // Mostrar ligas y sus códigos
 								listado = Conexion.obtenerListadoLigas(_error);

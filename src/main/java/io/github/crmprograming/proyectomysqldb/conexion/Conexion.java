@@ -114,6 +114,7 @@ public abstract class Conexion {
 					stmt.setBoolean(4, internacional);
 					result = (stmt.executeUpdate() > 0);
 				} else {
+					result = false;
 					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga llamada " + codLiga;
 				}
 			} catch (SQLException e) {
