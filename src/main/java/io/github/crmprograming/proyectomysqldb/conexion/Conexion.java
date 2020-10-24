@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -53,9 +54,14 @@ public abstract class Conexion {
 							rows.getBoolean("internacional")));
 				}
 				
-				con.close();
 			} catch (SQLException e) {
 				_error[0] = "Se ha producido un error al construir el listado de equipos: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -74,9 +80,14 @@ public abstract class Conexion {
 					listado.add(new Liga(rows.getString("codLiga"), rows.getString("nomLiga")));
 				}
 				
-				con.close();
 			} catch (SQLException e) {
 				_error[0] = "Se ha producido un error al construir el listado de equipos: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -104,14 +115,71 @@ public abstract class Conexion {
 					result = (stmt.executeUpdate() > 0);
 				} else {
 					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga llamada " + codLiga;
-				}				
-				con.close();
+				}
 			} catch (SQLException e) {
 				result = false;
 				_error[0] = "Se ha producido un error al dar de alta el equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
+		return result;
+	}
+	
+	public static boolean comprobarEquipoExiste(int codEquipo, String[] _error) {
+		boolean result = true;
+		Connection con = conectar(_error);
+		
+		if (_error[0].equals("")) {
+			try {
+				ResultSet row;
+				PreparedStatement stmt = con.prepareStatement("SELECT * FROM equipos WHERE codEquipo = ?");
+				
+				stmt.setInt(1, codEquipo);
+				row = stmt.executeQuery();
+				
+				result = row.next();
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al borrar el equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return result;
+	}
+
+	public static boolean borrarEquipo(int idEquipo, String[] _error) {
+		boolean result = true;
+		Connection con = conectar(_error);
+		
+		if (result = _error[0].equals("")) {
+			try {
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM equipos WHERE codEquipo = ?");
+				stmt.setInt(1, idEquipo);
+				result = (stmt.executeUpdate() > 0);
+			} catch (SQLIntegrityConstraintViolationException e) {
+				result = false;
+				_error[0] = "No se puede borrar el equipo " + idEquipo + ": El equipo está siendo referenciado en otra(s) tabla(s)";
+			} catch (SQLException e) {
+				result = false;
+				_error[0] = "Se ha producido un error al borrar el equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		return result;
 	}
 

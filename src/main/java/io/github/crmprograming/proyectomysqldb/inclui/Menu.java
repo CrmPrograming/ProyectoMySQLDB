@@ -33,9 +33,10 @@ public abstract class Menu {
 		ArrayList<Registro> listado;
 		Scanner in = new Scanner(System.in);
 		int opc = -1;
-		String[] _error = new String[] {""};
+		String[] _error;
 		String nomEquipo, codLiga, localidad;
 		boolean internacional;
+		int idEquipo;
 		
 		do {
 			_error = new String[] {""};
@@ -86,19 +87,43 @@ public abstract class Menu {
 								if (_error[0].equals(""))
 									mostrarTablaLigas(listado);
 							break;
+							
+							default:
+								System.out.println("- Opción introducida no válida");
 						}
 						
 					} while (opc != 0 && _error[0].equals(""));
 					opc = 2;
 				break;
+				
+				case 3: // Eliminar Equipo
+					do {
+						System.out.print("> Introduzca el ID del equipo a eliminar o -1 para cancelar: ");
+						idEquipo = in.nextInt();
+						
+						if (idEquipo != -1) {
+							if (Conexion.comprobarEquipoExiste(idEquipo, _error))								
+								if (Conexion.borrarEquipo(idEquipo, _error))
+									System.out.printf("Se ha borrado el equipo %d correctamente%n", idEquipo);
+							else if (_error[0].equals(""))
+								System.out.println("No existe ningún equipo con el id " + idEquipo);
+						}
+						
+						if (!_error[0].equals("")) {
+							System.err.println(_error[0]);
+							_error[0] = "";
+						}
+							
+					} while (idEquipo != -1);
+					
+				break;
 	
 				default:
 					System.out.println("- Opción introducida no válida");
-				break;
 			}
 			
 			if (!_error[0].equals(""))
-				System.out.println(_error[0]);
+				System.err.println(_error[0]);
 			
 		} while(opc != 0);
 		in.close();
