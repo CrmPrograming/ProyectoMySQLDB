@@ -20,7 +20,7 @@ public abstract class Conexion {
 	private final static String BD_NOMBRE = "bdfutbol";
 	private final static String HOSTNAME = "localhost:3306";
 	
-	public static Connection conectar(String[] _error) {
+	private static Connection conectar(String[] _error) {
 		Connection con = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -43,7 +43,7 @@ public abstract class Conexion {
 		if (_error[0].equals("")) {			
 			try {
 				Statement stmt = con.createStatement();
-				ResultSet rows = stmt.executeQuery("SELECT codEquipo, nomEquipo, codLiga, nomLiga, localidad, internacional FROM equipos"
+				ResultSet rows = stmt.executeQuery("SELECT codEquipo, nomEquipo, equipos.codLiga, nomLiga, localidad, internacional FROM equipos"
 												+ " INNER JOIN ligas ON equipos.codLiga = ligas.codLiga");
 				while (rows.next()) {
 					listado.add(new Equipo(
@@ -52,7 +52,8 @@ public abstract class Conexion {
 							rows.getString("codLiga"),
 							rows.getString("nomLiga"),
 							rows.getString("localidad"),
-							rows.getBoolean("internacional")));
+							rows.getBoolean("internacional"))
+					);
 				}
 				
 			} catch (SQLException e) {
@@ -96,19 +97,14 @@ public abstract class Conexion {
 	}
 	
 	public static boolean insertarEquipo(Equipo equipo, String[] _error) {
-		boolean result = true;
+		boolean result;
 		Connection con = conectar(_error);
 		
 		if (result = _error[0].equals("")) {
 			try {
-				// Comprobamos primero si la liga dada existe				
-				ResultSet rows;
-				PreparedStatement stmt = con.prepareStatement("SELECT * FROM ligas WHERE codLiga = ?");
-				stmt.setString(1, equipo.getCodLiga());
-				rows = stmt.executeQuery();
-				
-				if (rows.next()) {
-					stmt = con.prepareStatement("INSERT INTO equipos VALUES (NULL, ?, ?, ?, ?)");
+				// Comprobamos primero si la liga dada existe
+				if (isLigaExiste(equipo.getCodLiga(), con)) {
+					PreparedStatement stmt = con.prepareStatement("INSERT INTO equipos VALUES (NULL, ?, ?, ?, ?)");
 					stmt.setString(1, equipo.getNomEquipo());
 					stmt.setString(2, equipo.getCodLiga());
 					stmt.setString(3, equipo.getLocalidad());
@@ -116,7 +112,7 @@ public abstract class Conexion {
 					result = (stmt.executeUpdate() > 0);
 				} else {
 					result = false;
-					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga llamada " + equipo.getCodLiga();
+					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga con código " + equipo.getCodLiga();
 				}
 			} catch (SQLException e) {
 				result = false;
@@ -133,11 +129,17 @@ public abstract class Conexion {
 		return result;
 	}
 	
-	public static boolean comprobarEquipoExiste(int codEquipo, String[] _error) {
-		boolean result = true;
+	public static boolean isLigaExiste(String codLiga, Connection con) throws SQLException {
+		PreparedStatement stmt = con.prepareStatement("SELECT * FROM ligas WHERE codLiga = ?");
+		stmt.setString(1,  codLiga);
+		return (stmt.executeQuery().next());
+	}
+	
+	public static boolean isEquipoExiste(int codEquipo, String[] _error) {
+		boolean result;
 		Connection con = conectar(_error);
 		
-		if (_error[0].equals("")) {
+		if (result = _error[0].equals("")) {
 			try {
 				ResultSet row;
 				PreparedStatement stmt = con.prepareStatement("SELECT * FROM equipos WHERE codEquipo = ?");
@@ -147,7 +149,7 @@ public abstract class Conexion {
 				
 				result = row.next();
 			} catch (SQLException e) {
-				_error[0] = "Se ha producido un error al borrar el equipo: " + e.getLocalizedMessage();
+				_error[0] = "Se ha producido un error al buscar el equipo: " + e.getLocalizedMessage();
 			} finally {
 				try {
 					con.close();
@@ -160,7 +162,7 @@ public abstract class Conexion {
 	}
 
 	public static boolean borrarEquipo(int idEquipo, String[] _error) {
-		boolean result = true;
+		boolean result;
 		Connection con = conectar(_error);
 		
 		if (result = _error[0].equals("")) {
@@ -182,6 +184,79 @@ public abstract class Conexion {
 				}
 			}
 		}
+		return result;
+	}
+
+	public static Equipo obtenerEquipo(int idEquipo, String[] _error) {
+		Equipo result = null;
+		Connection con = conectar(_error);
+		
+		if (_error[0].equals("")) {
+			try {
+				ResultSet row;
+				PreparedStatement stmt = con.prepareStatement("SELECT codEquipo, nomEquipo, equipos.codLiga, nomLiga, localidad, internacional FROM equipos "
+															+ "INNER JOIN ligas ON equipos.codLiga = ligas.codLiga WHERE codEquipo = ?");
+				stmt.setInt(1, idEquipo);
+				row = stmt.executeQuery();
+				if (row.next())
+					result = new Equipo(
+							row.getInt("codEquipo"),
+							row.getString("nomEquipo"),
+							row.getString("codLiga"),
+							row.getString("nomLiga"),
+							row.getString("localidad"),
+							row.getBoolean("internacional")
+					);
+				else
+					_error[0] = "No existe el equipo " + idEquipo;
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al obtener el equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		 
+		return result;
+	}
+
+	public static boolean modificarEquipo(Equipo equipo, String[] _error) {
+		boolean result;
+		Connection con = conectar(_error);
+		
+		if (result = _error[0].equals("")) {
+			try {
+				// Comprobamos primero si la liga dada existe
+				if (isLigaExiste(equipo.getCodLiga(), con)) {
+					PreparedStatement stmt = con.prepareStatement("UPDATE equipos SET nomEquipo = ?, codLiga = ?, localidad = ?, internacional = ?"
+																+ " WHERE codEquipo = ?");
+					stmt.setString(1, equipo.getNomEquipo());
+					stmt.setString(2, equipo.getCodLiga());
+					stmt.setString(3, equipo.getLocalidad());
+					stmt.setBoolean(4, equipo.isInternacional());
+					stmt.setInt(5, equipo.getCodEquipo());
+					
+					result = (stmt.executeUpdate() > 0);
+					
+				} else {
+					result = false;
+					_error[0] = "Se ha producido un error al modificar el equipo: " + "No existe la liga con código " + equipo.getCodLiga();
+				}
+				
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al modificar el equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
 		return result;
 	}
 
