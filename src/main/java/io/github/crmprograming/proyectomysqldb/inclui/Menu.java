@@ -8,8 +8,14 @@ import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
 import io.github.crmprograming.proyectomysqldb.modelo.Liga;
 import io.github.crmprograming.proyectomysqldb.modelo.Registro;
 
+/**
+ * Clase gestora de la interfaz de la aplicación.
+ */
 public abstract class Menu {
 
+	/**
+	 * Método encargado de mostrar el menú inicial de la aplicación.
+	 */
 	private static void mostrarMenuInicial() {
 		System.out.println();
 		System.out.println("########################");
@@ -29,6 +35,9 @@ public abstract class Menu {
 		System.out.print("\n> Introduzca la opción a ejecutar: ");
 	}
 
+	/**
+	 * Método encargado de gestionar el menú principal de la aplicación.
+	 */
 	private static void gestionarMenuInicial() {
 		ArrayList<Registro> listado;
 		Scanner in = new Scanner(System.in);
@@ -57,7 +66,7 @@ public abstract class Menu {
 			case 2: // Insertar equipo
 				opc = -1;
 				do {
-					mostrarInsertarEquipo();
+					mostrarMenuInsertarEquipo();
 					opc = in.nextInt();
 
 					switch (opc) {
@@ -169,6 +178,11 @@ public abstract class Menu {
 		in.close();
 	}
 
+	/**
+	 * Método encargado de mostrar el listado de equipos.
+	 *
+	 * @param listado ArrayList con los datos a mostrar
+	 */
 	private static void mostrarTablaEquipos(ArrayList<Registro> listado) {
 		int i;
 
@@ -182,7 +196,10 @@ public abstract class Menu {
 		System.out.println();
 	}
 
-	private static void mostrarInsertarEquipo() {
+	/**
+	 * Método encargado de mostrar el menú para insertar un equipo
+	 */
+	private static void mostrarMenuInsertarEquipo() {
 		System.out.println();
 		System.out.println("1) Dar datos del equipo");
 		System.out.println("2) Mostrar ligas con sus identificadores");
@@ -190,6 +207,11 @@ public abstract class Menu {
 		System.out.print("\n> Introduzca la opción a ejecutar: ");
 	}
 
+	/**
+	 * Método encargado de mostrar el listado de ligas.
+	 *
+	 * @param listado ArrayList con los datos a mostrar
+	 */
 	private static void mostrarTablaLigas(ArrayList<Registro> listado) {
 		int i;
 
@@ -202,6 +224,9 @@ public abstract class Menu {
 		System.out.println();
 	}
 
+	/**
+	 * Método encargado de iniciar la ejecución del menú
+	 */
 	public static void iniciar() {
 		gestionarMenuInicial();
 	}
