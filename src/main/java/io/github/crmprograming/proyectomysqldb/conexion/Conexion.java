@@ -43,12 +43,13 @@ public abstract class Conexion {
 		if (_error[0].equals("")) {			
 			try {
 				Statement stmt = con.createStatement();
-				ResultSet rows = stmt.executeQuery("SELECT codEquipo, nomEquipo, nomLiga, localidad, internacional FROM equipos"
+				ResultSet rows = stmt.executeQuery("SELECT codEquipo, nomEquipo, codLiga, nomLiga, localidad, internacional FROM equipos"
 												+ " INNER JOIN ligas ON equipos.codLiga = ligas.codLiga");
 				while (rows.next()) {
 					listado.add(new Equipo(
 							rows.getInt("codEquipo"),
 							rows.getString("nomEquipo"),
+							rows.getString("codLiga"),
 							rows.getString("nomLiga"),
 							rows.getString("localidad"),
 							rows.getBoolean("internacional")));
@@ -94,7 +95,7 @@ public abstract class Conexion {
 		return listado;
 	}
 	
-	public static boolean insertarEquipo(String nomEquipo, String codLiga, String localidad, boolean internacional, String[] _error) {
+	public static boolean insertarEquipo(Equipo equipo, String[] _error) {
 		boolean result = true;
 		Connection con = conectar(_error);
 		
@@ -103,19 +104,19 @@ public abstract class Conexion {
 				// Comprobamos primero si la liga dada existe				
 				ResultSet rows;
 				PreparedStatement stmt = con.prepareStatement("SELECT * FROM ligas WHERE codLiga = ?");
-				stmt.setString(1, codLiga);
+				stmt.setString(1, equipo.getCodLiga());
 				rows = stmt.executeQuery();
 				
 				if (rows.next()) {
 					stmt = con.prepareStatement("INSERT INTO equipos VALUES (NULL, ?, ?, ?, ?)");
-					stmt.setString(1, nomEquipo);
-					stmt.setString(2, codLiga);
-					stmt.setString(3, localidad);
-					stmt.setBoolean(4, internacional);
+					stmt.setString(1, equipo.getNomEquipo());
+					stmt.setString(2, equipo.getCodLiga());
+					stmt.setString(3, equipo.getLocalidad());
+					stmt.setBoolean(4, equipo.isInternacional());
 					result = (stmt.executeUpdate() > 0);
 				} else {
 					result = false;
-					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga llamada " + codLiga;
+					_error[0] = "Se ha producido un error al dar de alta el equipo: " + "No existe la liga llamada " + equipo.getCodLiga();
 				}
 			} catch (SQLException e) {
 				result = false;

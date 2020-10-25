@@ -4,13 +4,15 @@ public class Equipo extends Registro {
 	
 	private int codEquipo;
 	private String nomEquipo;
+	private String codLiga;
 	private String liga;
 	private String localidad;
 	private boolean internacional;
 	
-	public Equipo(int codEquipo, String nomEquipo, String liga, String localidad, boolean internacional) {
+	public Equipo(int codEquipo, String nomEquipo, String codLiga, String liga, String localidad, boolean internacional) {
 		this.codEquipo = codEquipo;
 		this.nomEquipo = nomEquipo;
+		this.codLiga = codLiga;
 		this.liga = liga;
 		this.localidad = localidad;
 		this.internacional = internacional;
@@ -30,6 +32,14 @@ public class Equipo extends Registro {
 
 	public void setNomEquipo(String nomEquipo) {
 		this.nomEquipo = nomEquipo;
+	}
+	
+	public String getCodLiga() {
+		return codLiga;
+	}
+
+	public void setCodLiga(String codLiga) {
+		this.codLiga = codLiga;
 	}
 
 	public String getLiga() {

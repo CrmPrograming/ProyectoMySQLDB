@@ -75,7 +75,7 @@ public abstract class Menu {
 								internacional = in.nextLine().toUpperCase().equals("S");
 								System.out.println();
 								
-								if (Conexion.insertarEquipo(nomEquipo, codLiga, localidad, internacional, _error))
+								if (Conexion.insertarEquipo(new Equipo(-1, nomEquipo, codLiga, null, localidad, internacional), _error))
 									System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas");
 							break;
 							case 2: // Mostrar ligas y sus códigos
@@ -113,6 +113,21 @@ public abstract class Menu {
 							
 					} while (idEquipo != -1);
 					
+				break;
+				
+				case 4: // Modificar Equipo
+					do {
+						System.out.print("> Introduzca el ID del equipo a modificar o -1 para cancelar: ");
+						idEquipo = in.nextInt();
+						
+						if (idEquipo != -1) {
+							if (Conexion.comprobarEquipoExiste(idEquipo, _error)) {
+								
+							}
+								
+						}
+						
+					} while (idEquipo != -1);
 				break;
 	
 				default:
