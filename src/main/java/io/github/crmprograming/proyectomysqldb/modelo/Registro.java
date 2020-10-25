@@ -8,5 +8,7 @@ package io.github.crmprograming.proyectomysqldb.modelo;
  * y poder reutilizar código.
  */
 public abstract class Registro {
+	
+	public abstract Object[] obtenerDatos();
 
 }

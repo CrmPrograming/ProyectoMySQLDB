@@ -20,6 +20,11 @@ public class Liga extends Registro {
 		this.nombre = nombre;
 	}
 	
+	@Override
+	public Object[] obtenerDatos() {
+		return new Object[] {codigo, nombre}; 
+	}
+	
 	// ######################
 	//
 	// 	 GETTERS Y SETTERS

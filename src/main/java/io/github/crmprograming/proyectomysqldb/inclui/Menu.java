@@ -5,7 +5,6 @@ import java.util.Scanner;
 
 import io.github.crmprograming.proyectomysqldb.conexion.Conexion;
 import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
-import io.github.crmprograming.proyectomysqldb.modelo.Liga;
 import io.github.crmprograming.proyectomysqldb.modelo.Registro;
 
 /**
@@ -179,24 +178,6 @@ public abstract class Menu {
 	}
 
 	/**
-	 * Método encargado de mostrar el listado de equipos.
-	 *
-	 * @param listado ArrayList con los datos a mostrar
-	 */
-	private static void mostrarTablaEquipos(ArrayList<Registro> listado) {
-		int i;
-
-		for (i = 0; i < listado.size(); i++) {
-			Equipo actual = (Equipo) listado.get(i);
-			if (i % 5 == 0)
-				System.out.printf("%n%n%11s | %-40s | %-50s | %-60s | %-15s%n", "codEquipo", "nomEquipo", "nomLiga", "localidad", "internacional");
-			System.out.printf("%n%11s | %-40s | %-50s | %-60s | %-15s ", actual.getCodEquipo(), actual.getNomEquipo(),
-					actual.getLiga(), actual.getLocalidad(), (actual.isInternacional()) ? "Sí" : "No");
-		}
-		System.out.println();
-	}
-
-	/**
 	 * Método encargado de mostrar el menú para insertar un equipo
 	 */
 	private static void mostrarMenuInsertarEquipo() {
@@ -208,18 +189,44 @@ public abstract class Menu {
 	}
 
 	/**
+	 * Método encargado de mostrar el listado de equipos.
+	 * Delega la tarea de dar formato a la tabla a la función mostrarTablaDatos.
+	 * 
+	 * @param listado ArrayList con los datos a mostrar
+	 * @see mostrarTablaDatos
+	 */
+	private static void mostrarTablaEquipos(ArrayList<Registro> listado) {
+		mostrarTablaDatos(listado, new String[] {"codEquipo", "nomEquipo", "nomLiga", "localidad", "internacional"}, "%n%11s | %-40s | %-50s | %-60s | %-15s");
+	}
+	
+	/**
 	 * Método encargado de mostrar el listado de ligas.
+	 * Delega la tarea de dar formato a la tabla a la función mostrarTablaDatos.
 	 *
 	 * @param listado ArrayList con los datos a mostrar
+	 * @see mostrarTablaDatos
 	 */
 	private static void mostrarTablaLigas(ArrayList<Registro> listado) {
+		mostrarTablaDatos(listado, new String[] {"codLiga", "nomLiga"}, "%n%10s | %-50s");
+	}
+	
+	/**
+	 * Método encargado de construir una tabla.
+	 * Gracias al formato indicado por parámetro, construirá la tabla
+	 * independiente de los datos que le vengan.
+	 * La cabecera reaparece cada 5 filas mostradas.
+	 * 
+	 * @param listado ArrayList con los datos a mostrar
+	 * @param _cabecera Array con las cabeceras en String de cada columna
+	 * @param formato String con el formato preparado asociado a los datos a mostrar
+	 */
+	private static void mostrarTablaDatos(ArrayList<Registro> listado, Object[] _cabecera, String formato) {
 		int i;
-
-		for (i = 0; i < listado.size(); i++) {
-			Liga actual = (Liga) listado.get(i);
+		
+		for (i = 0; i < listado.size(); i++) {			
 			if (i % 5 == 0)
-				System.out.printf("%n%n%10s | %-50s", "codLiga", "nomLiga");
-			System.out.printf("%n%n%10s | %-50s", actual.getCodigo(), actual.getNombre());
+				System.out.printf("%n" + formato, _cabecera);
+			System.out.printf(formato, listado.get(i).obtenerDatos());			
 		}
 		System.out.println();
 	}

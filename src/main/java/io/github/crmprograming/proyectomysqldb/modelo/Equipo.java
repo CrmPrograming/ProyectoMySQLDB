@@ -31,6 +31,11 @@ public class Equipo extends Registro {
 		this.internacional = internacional;
 	}
 	
+	@Override
+	public Object[] obtenerDatos() {
+		return new Object[] {codEquipo, nomEquipo, liga, localidad, (internacional)?"Sí":"No"};
+	}
+	
 	// ######################
 	//
 	// 	 GETTERS Y SETTERS
