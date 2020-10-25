@@ -1,5 +1,6 @@
 package io.github.crmprograming.proyectomysqldb.inclui;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -235,7 +236,12 @@ public abstract class Menu {
 	 * Método encargado de iniciar la ejecución del menú
 	 */
 	public static void iniciar() {
-		gestionarMenuInicial();
+		try {
+			Conexion.init("config.properties");
+			gestionarMenuInicial();
+		} catch (IOException e) {
+			System.err.println("La aplicación no se pudo iniciar. " + e.getLocalizedMessage());
+		}
 	}
 
 }

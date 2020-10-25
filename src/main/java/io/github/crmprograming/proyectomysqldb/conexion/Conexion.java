@@ -1,5 +1,10 @@
 package io.github.crmprograming.proyectomysqldb.conexion;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
 import io.github.crmprograming.proyectomysqldb.modelo.Liga;
@@ -19,13 +26,51 @@ import io.github.crmprograming.proyectomysqldb.modelo.Registro;
  */
 public abstract class Conexion {
 	
-	private final static String USUARIO = "root";
+	private static HashMap<String, String> datosConexion;
 	
-	private final static String PASSWD = "";
-	
-	private final static String BD_NOMBRE = "bdfutbol";
-	
-	private final static String HOSTNAME = "localhost:3306";
+	/**
+	 * Método encargado de inicializar la clase. Buscará en el fichero de
+	 * configuración los datos requeridos para establecer la conexión.
+	 * 
+	 * Si el método no consigue localizar el fichero o no está en un buen formato,
+	 * la aplicación se detendrá y no dejará continuar.
+	 * 
+	 * La estructura válida del fichero debe ser:
+	 * 
+	 * usuario=[dato1]
+	 * passwd=[dato2]
+	 * bd_nombre=[dato3]
+	 * hostname=[dato4]
+	 * 
+	 * Si alguno de los parámetros no tiene valor, dejar en blanco sin eliminar
+	 * el campo asociado.
+	 * 
+	 * @param fichero Ruta del fichero dentro de la carpeta de recursos.
+	 * @throws IOException
+	 */
+	public static void init(String fichero) throws IOException {
+		InputStream inputStream = Conexion.class.getClassLoader().getResourceAsStream(fichero);
+		InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+		BufferedReader reader = new BufferedReader(streamReader);
+		ArrayList<String> cabeceras = new ArrayList<String>(Arrays.asList("usuario", "passwd", "bd_nombre", "hostname"));
+		String linea;
+		String[] _parametro;
+		boolean validado = true;
+		
+		datosConexion = new HashMap<String, String>();
+		
+		while (validado && (linea = reader.readLine()) != null) {
+			_parametro = linea.split("=");
+			if (validado = cabeceras.contains(_parametro[0]))
+				datosConexion.put(_parametro[0], (_parametro.length == 2)?_parametro[1]:"");
+		}
+		
+		reader.close();
+		streamReader.close();
+		
+		if (!validado)
+			throw new IOException("Fichero de configuración alterado o mal construido");
+	}
 	
 	/**
 	 * Método encargado de establecer conexión con la base de datos
@@ -41,10 +86,10 @@ public abstract class Conexion {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			con = DriverManager.getConnection("jdbc:mysql://"
-												+ HOSTNAME + "/"
-												+ BD_NOMBRE,
-												  USUARIO,
-												  PASSWD);
+												+ datosConexion.get("hostname") + "/"
+												+ datosConexion.get("bd_nombre"),
+												datosConexion.get("usuario"),
+												datosConexion.get("passwd"));
 		} catch (Exception e) {
 			_error[0] = "Se ha producido un error en la conexión: " + e.getLocalizedMessage();
 		}
