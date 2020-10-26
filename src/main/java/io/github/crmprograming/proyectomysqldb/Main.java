@@ -1,6 +1,6 @@
 package io.github.crmprograming.proyectomysqldb;
 
-import io.github.crmprograming.proyectomysqldb.inclui.Menu;
+import io.github.crmprograming.proyectomysqldb.clui.Menu;
 
 /**
  * Clase principal de la aplicación

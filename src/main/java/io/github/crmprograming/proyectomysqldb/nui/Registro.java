@@ -1,4 +1,4 @@
-package io.github.crmprograming.proyectomysqldb.modelo;
+package io.github.crmprograming.proyectomysqldb.nui;
 
 /**
  * Clase plantilla representativa de los registros que puede

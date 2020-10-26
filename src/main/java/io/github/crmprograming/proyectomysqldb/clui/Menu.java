@@ -1,12 +1,12 @@
-package io.github.crmprograming.proyectomysqldb.inclui;
+package io.github.crmprograming.proyectomysqldb.clui;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import io.github.crmprograming.proyectomysqldb.conexion.Conexion;
-import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
-import io.github.crmprograming.proyectomysqldb.modelo.Registro;
+import io.github.crmprograming.proyectomysqldb.nui.Conexion;
+import io.github.crmprograming.proyectomysqldb.nui.Equipo;
+import io.github.crmprograming.proyectomysqldb.nui.Registro;
 
 /**
  * Clase gestora de la interfaz de la aplicación.

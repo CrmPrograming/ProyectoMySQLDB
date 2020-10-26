@@ -1,4 +1,4 @@
-package io.github.crmprograming.proyectomysqldb.conexion;
+package io.github.crmprograming.proyectomysqldb.nui;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,10 +15,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
-import io.github.crmprograming.proyectomysqldb.modelo.Equipo;
-import io.github.crmprograming.proyectomysqldb.modelo.Liga;
-import io.github.crmprograming.proyectomysqldb.modelo.Registro;
 
 /**
  * Clase gestora de las conexiones a la base de datos, hace de intermediaria entre la interfaz y la bd.

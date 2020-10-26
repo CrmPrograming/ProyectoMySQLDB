@@ -1,4 +1,4 @@
-package io.github.crmprograming.proyectomysqldb.modelo;
+package io.github.crmprograming.proyectomysqldb.nui;
 
 /**
  * Clase gestora de una liga junto con sus características.
