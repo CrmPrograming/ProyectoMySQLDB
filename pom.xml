@@ -9,18 +9,18 @@
 	<!-- DATOS BÁSICOS DEL PROYECTO -->
 	<name>ProyectoMySQLDB</name>
 	<description>Práctica para la conexión a una base de datos MySQL.</description>
-	
+
 	<properties>
 		<maven.compiler.target>11</maven.compiler.target>
 		<maven.compiler.source>11</maven.compiler.source>
 		<exec.mainClass>io.github.crmprograming.proyectomysqldb.Main</exec.mainClass>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
-		    <groupId>mysql</groupId>
-		    <artifactId>mysql-connector-java</artifactId>
-		    <version>8.0.18</version>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.18</version>
 		</dependency>
 	</dependencies>
 

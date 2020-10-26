@@ -86,7 +86,7 @@ public abstract class Menu {
 						System.out.println();
 
 						if (Conexion.insertarEquipo(new Equipo(-1, nomEquipo, codLiga, null, localidad, internacional), _error))
-							System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas");
+							System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas.");
 						break;
 					case 2: // Mostrar ligas y sus códigos
 						listado = Conexion.obtenerListadoLigas(_error);
@@ -166,6 +166,46 @@ public abstract class Menu {
 
 				} while (idEquipo != -1);
 				break;
+				
+			case 5:
+				opc = -1;
+				do {
+					mostrarMenuFunciones();
+					opc = in.nextInt();
+
+					switch (opc) {
+					case 0:
+						break;
+					case 1: // Pedir datos del equipo
+						in.nextLine();
+
+						System.out.print("> Nombre del equipo (LIMIT 40): ");
+						nomEquipo = in.nextLine();
+						System.out.print("> Código de la liga (LIMIT 5): ");
+						codLiga = in.nextLine();
+						System.out.print("> Localidad del equipo (LIMIT 60): ");
+						localidad = in.nextLine();
+						System.out.print("> ¿El equipo es internacional? (s|n): ");
+						internacional = in.nextLine().toUpperCase().equals("S");
+						System.out.println();
+
+						if (Conexion.insertarEquipoFunciones(new Equipo(-1, nomEquipo, codLiga, null, localidad, internacional), _error))
+							System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas.");
+						break;
+					case 2: // Mostrar ligas y sus códigos
+						listado = Conexion.obtenerListadoLigas(_error);
+
+						if (_error[0].equals(""))
+							mostrarTablaLigas(listado);
+						break;
+
+					default:
+						System.out.println("- Opción introducida no válida");
+					}
+
+				} while (opc != 0 && _error[0].equals(""));
+				opc = 5;
+				break;
 
 			default:
 				System.out.println("- Opción introducida no válida");
@@ -230,6 +270,16 @@ public abstract class Menu {
 			System.out.printf(formato, listado.get(i).obtenerDatos());			
 		}
 		System.out.println();
+	}
+	
+	private static void mostrarMenuFunciones() {
+		System.out.println();
+		System.out.println("1) Insertar un equipo");
+		System.out.println("2) Visualizar todos los contratos según un DNI o NIE");
+		System.out.println("3) Visualizar la cantidad de futbolistas en activo");
+		System.out.println("4) Visualizar la cantidad total de meses en activo de un jugador");
+		System.out.println("0) Cancelar operación");
+		System.out.print("\n> Introduzca la opción a ejecutar: ");
 	}
 
 	/**

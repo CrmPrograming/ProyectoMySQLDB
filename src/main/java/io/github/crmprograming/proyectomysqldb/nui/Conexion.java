@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -380,5 +382,50 @@ public abstract class Conexion {
 		
 		return result;
 	}
+	
+	/**
+	 * Método encargado de dar de alta un equipo.
+	 *
+	 * @param equipo Instancia de Equipo con los datos a insertar
+	 * @param _error Array de String con los posibles errores que pudiera dar la operación
+	 * @return booleano con el estado resultante de la operación
+	 */
+	public static boolean insertarEquipoFunciones(Equipo equipo, String[] _error) {
+		boolean result;
+		Connection con = conectar(_error);
+		
+		if (result = _error[0].equals("")) {
+			try {
+				CallableStatement stmt = con.prepareCall("Call insertarEquipo(?, ?, ?, ?, ?, ?)");
+				stmt.setString(1, equipo.getNomEquipo());
+				stmt.setString(2, equipo.getCodLiga());
+				stmt.setString(3, equipo.getLocalidad());
+				stmt.setBoolean(4, equipo.isInternacional());
+				stmt.registerOutParameter(5, Types.BIT);
+				stmt.registerOutParameter(6, Types.BIT);
+				
+				stmt.execute();
+				if (stmt.getBoolean(5)) {
+					if (!(result = stmt.getBoolean(6)))
+					_error[0] = "Se ha producido un error al dar de alta el equipo: El equipo " + equipo.getNomEquipo() + " ya existe.";
+				} else {
+					result = false;
+					_error[0] = "Se ha producido un error al dar de alta el equipo: La liga " + equipo.getCodLiga() + " no existe.";
+				}
+				
+			} catch (SQLException e) {
+				result = false;
+				_error[0] = "Se ha producido un error al dar de alta el equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return result;
+	}	
 
 }
