@@ -2,6 +2,7 @@ package io.github.crmprograming.proyectomysqldb.clui;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import io.github.crmprograming.proyectomysqldb.nui.Conexion;
@@ -110,7 +111,9 @@ public abstract class Menu {
 
 					if (idEquipo != -1) {
 						if (Conexion.isEquipoExiste(idEquipo, _error)) {
-							if (Conexion.borrarEquipo(idEquipo, _error))
+							actual = Conexion.obtenerEquipo(idEquipo, _error);
+							mostrarTablaEquipos(new ArrayList<Registro>(Arrays.asList(actual)));
+							if (confirmarBorrado(in) && Conexion.borrarEquipo(idEquipo, _error))
 								System.out.printf("Se ha borrado el equipo %d correctamente%n", idEquipo);
 						} else if (_error[0].equals(""))
 							System.out.println("No existe ningún equipo con el id " + idEquipo);
@@ -270,6 +273,14 @@ public abstract class Menu {
 			System.out.printf(formato, listado.get(i).obtenerDatos());			
 		}
 		System.out.println();
+	}
+	
+	private static boolean confirmarBorrado(Scanner in) {
+		in.nextLine();
+		System.out.println();
+		System.out.print("> ¿Está seguro de que quiere borrar el equipo? (s|n) ");
+		
+		return in.nextLine().toUpperCase().equals("S");
 	}
 	
 	private static void mostrarMenuFunciones() {
