@@ -384,7 +384,8 @@ public abstract class Conexion {
 	}
 	
 	/**
-	 * Método encargado de dar de alta un equipo.
+	 * Método encargado de dar de alta un equipo utilizando el procedimiento
+	 * asociado de la base de datos.
 	 *
 	 * @param equipo Instancia de Equipo con los datos a insertar
 	 * @param _error Array de String con los posibles errores que pudiera dar la operación

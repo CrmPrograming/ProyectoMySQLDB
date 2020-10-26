@@ -9,6 +9,7 @@ import io.github.crmprograming.proyectomysqldb.nui.Conexion;
 import io.github.crmprograming.proyectomysqldb.nui.Equipo;
 import io.github.crmprograming.proyectomysqldb.nui.Registro;
 
+// TODO: Auto-generated Javadoc
 /**
  * Clase gestora de la interfaz de la aplicación.
  */
@@ -222,7 +223,7 @@ public abstract class Menu {
 	}
 
 	/**
-	 * Método encargado de mostrar el menú para insertar un equipo
+	 * Método encargado de mostrar el menú para insertar un equipo.
 	 */
 	private static void mostrarMenuInsertarEquipo() {
 		System.out.println();
@@ -275,6 +276,14 @@ public abstract class Menu {
 		System.out.println();
 	}
 	
+	
+	/**
+	 * Método encargado de confirmar si el usuario desea borrar un equipo
+	 * o anular la operación.
+	 *
+	 * @param in Instancia de Scanner que capturará la decisión del usuario
+	 * @return true, si el usuario confirma
+	 */
 	private static boolean confirmarBorrado(Scanner in) {
 		in.nextLine();
 		System.out.println();
@@ -283,6 +292,10 @@ public abstract class Menu {
 		return in.nextLine().toUpperCase().equals("S");
 	}
 	
+	/**
+	 * Método encargado de mostrar el menú con las distintas funciones
+	 * disponibles en la aplicación.
+	 */
 	private static void mostrarMenuFunciones() {
 		System.out.println();
 		System.out.println("1) Insertar un equipo");
@@ -294,7 +307,7 @@ public abstract class Menu {
 	}
 
 	/**
-	 * Método encargado de iniciar la ejecución del menú
+	 * Método encargado de iniciar la ejecución del menú.
 	 */
 	public static void iniciar() {
 		try {
