@@ -9,7 +9,6 @@ import io.github.crmprograming.proyectomysqldb.nui.Conexion;
 import io.github.crmprograming.proyectomysqldb.nui.Equipo;
 import io.github.crmprograming.proyectomysqldb.nui.Registro;
 
-// TODO: Auto-generated Javadoc
 /**
  * Clase gestora de la interfaz de la aplicación.
  */
@@ -45,7 +44,7 @@ public abstract class Menu {
 		Scanner in = new Scanner(System.in);
 		int opc = -1;
 		String[] _error;
-		String nomEquipo, codLiga, localidad;
+		String nomEquipo, codLiga, localidad, dni;
 		boolean internacional;
 		int idEquipo;
 		Equipo actual;
@@ -196,11 +195,22 @@ public abstract class Menu {
 						if (Conexion.insertarEquipoFunciones(new Equipo(-1, nomEquipo, codLiga, null, localidad, internacional), _error))
 							System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas.");
 						break;
-					case 2: // Mostrar ligas y sus códigos
-						listado = Conexion.obtenerListadoLigas(_error);
-
-						if (_error[0].equals(""))
-							mostrarTablaLigas(listado);
+					case 2: // Visualizar todos los contratos
+						in.nextLine();
+						
+						do {
+							System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
+							dni = in.nextLine();
+							if (!dni.equals("-1")) {
+								listado = Conexion.obtenerContratosFutbolista(dni, _error);
+								
+								if (_error[0].equals("")) {
+									mostrarTablaContratos(listado);
+									dni = "-1";
+								}
+							}
+						} while (!dni.equals("-1") && _error[0].equals(""));
+						
 						break;
 
 					default:
@@ -268,12 +278,17 @@ public abstract class Menu {
 	private static void mostrarTablaDatos(ArrayList<Registro> listado, Object[] _cabecera, String formato) {
 		int i;
 		
-		for (i = 0; i < listado.size(); i++) {			
-			if (i % 5 == 0)
-				System.out.printf("%n" + formato, _cabecera);
-			System.out.printf(formato, listado.get(i).obtenerDatos());			
+		if (listado.isEmpty()) {
+			System.out.printf("%n" + formato, _cabecera);
+			System.out.printf("%nNo hay valores que mostrar\n");
+		} else {
+			for (i = 0; i < listado.size(); i++) {			
+				if (i % 5 == 0)
+					System.out.printf("%n" + formato, _cabecera);
+				System.out.printf(formato, listado.get(i).obtenerDatos());			
+			}
+			System.out.println();
 		}
-		System.out.println();
 	}
 	
 	
@@ -304,6 +319,17 @@ public abstract class Menu {
 		System.out.println("4) Visualizar la cantidad total de meses en activo de un jugador");
 		System.out.println("0) Cancelar operación");
 		System.out.print("\n> Introduzca la opción a ejecutar: ");
+	}
+	
+	/**
+	 * Método encargado de mostrar el listado de ligas.
+	 * Delega la tarea de dar formato a la tabla a la función mostrarTablaDatos.
+	 *
+	 * @param listado ArrayList con los datos a mostrar
+	 * @see mostrarTablaDatos
+	 */
+	private static void mostrarTablaContratos(ArrayList<Registro> listado) {
+		mostrarTablaDatos(listado, new String[] {"id", "equipo", "nomLiga", "fechaInicio", "fechaFin", "precioAnual", "precioRecision"}, "%n%5s | %-40s | %-50s | %-11s | %-11s | %-11s | %-11s");
 	}
 
 	/**

@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
@@ -427,6 +428,46 @@ public abstract class Conexion {
 		}
 		
 		return result;
+	}
+
+	public static ArrayList<Registro> obtenerContratosFutbolista(String dni, String[] _error) {
+		ArrayList<Registro> listado = new ArrayList<Registro>();
+		Connection con = conectar(_error);
+		
+		if (_error[0].equals("")) {
+			try {
+				ResultSet rows;
+				ResultSetMetaData rMeta;
+				CallableStatement stmt = con.prepareCall("Call listarContratoFutbolista(?)");
+				stmt.setString(1, dni);
+				rows = stmt.executeQuery();
+				rMeta = rows.getMetaData();
+				// Comprobamos si el procedimiento devuelve valores o un mensaje
+				if (rMeta.getColumnName(1).equals("id")) {
+					while (rows.next()) {
+						listado.add(new Contrato(
+								rows.getInt("id"),
+								rows.getString("equipo"),
+								rows.getString("liga"),
+								rows.getString("fechaInicio"),
+								rows.getString("fechaFin"),
+								rows.getLong("precioanual"),
+								rows.getLong("preciorecision"))
+						);
+					}
+				}
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al buscar el jugador dado: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return listado;
 	}	
 
 }
