@@ -26,12 +26,22 @@ import java.util.HashMap;
 public abstract class Conexion {
 	
 	public enum TIPO_CONEXION {
-		MYSQL,
-		SQLSERVER,
-		ACCESS
+		MYSQL(0), SQLSERVER(1), ACCESS(2);
+		
+		private final int id;
+		
+		private TIPO_CONEXION(int id) {
+			this.id = id;
+		}
+		
+		public int getId() {
+			return id;
+		}
 	}
 	
 	public static TIPO_CONEXION conexionDefinida;
+	
+	public static String[] descripcionConexion = {"MySQL", "SQLServ.", "Access"};
 	
 	private static String ejecProcedimiento;
 	

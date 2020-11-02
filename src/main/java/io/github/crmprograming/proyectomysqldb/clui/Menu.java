@@ -21,7 +21,7 @@ public abstract class Menu {
 		System.out.println();
 		System.out.println("########################");
 		System.out.printf("#%22s#%n", "");
-		System.out.println("#    PROYECTO MySQL    #");
+		System.out.printf("%-8s%-8s%8s%n", "#", Conexion.descripcionConexion[Conexion.conexionDefinida.getId()], "#");
 		System.out.printf("#%22s#%n", "");
 		System.out.println("########################");
 		System.out.println();
@@ -31,7 +31,8 @@ public abstract class Menu {
 		System.out.println("2) Insertar equipo");
 		System.out.println("3) Eliminar equipo");
 		System.out.println("4) Modificar los datos de un equipo");
-		System.out.println("5) Funciones adicionales");
+		if (Conexion.conexionDefinida != Conexion.TIPO_CONEXION.ACCESS)
+			System.out.println("5) Funciones adicionales");
 		System.out.println("0) Salir");
 		System.out.print("\n> Introduzca la opción a ejecutar: ");
 	}
