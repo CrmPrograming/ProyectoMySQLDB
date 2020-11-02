@@ -128,6 +128,9 @@ public abstract class Conexion {
 							datosConexion.get("passwd"));
 					break;
 				case ACCESS:
+					con = DriverManager.getConnection(datosConexion.get("url")
+							+ datosConexion.get("hostname") + "\\"
+							+ datosConexion.get("bd_nombre"));
 					break;
 				default:
 					break;

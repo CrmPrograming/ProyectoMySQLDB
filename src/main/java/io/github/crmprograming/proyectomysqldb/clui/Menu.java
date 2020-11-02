@@ -433,7 +433,8 @@ public abstract class Menu {
 				case 2:
 					Conexion.init("configSQLServer.properties", Conexion.TIPO_CONEXION.SQLSERVER);
 					break;
-				case 3:					
+				case 3:
+					Conexion.init("configAccess.properties", Conexion.TIPO_CONEXION.ACCESS);
 					break;
 				case 0:
 					System.out.println("Se cerrará la aplicación sin problemas.");
