@@ -48,6 +48,8 @@ public abstract class Menu {
 		boolean internacional;
 		int idEquipo;
 		Equipo actual;
+		int activosPrecioAnual, activosPrecioRecision;
+		int[] _result;
 
 		do {
 			_error = new String[] { "" };
@@ -198,18 +200,33 @@ public abstract class Menu {
 					case 2: // Visualizar todos los contratos
 						in.nextLine();
 						
-						do {
-							System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
-							dni = in.nextLine();
-							if (!dni.equals("-1")) {
-								listado = Conexion.obtenerContratosFutbolista(dni, _error);
-								
-								if (_error[0].equals("")) {
-									mostrarTablaContratos(listado);
-									dni = "-1";
-								}
+						System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
+						dni = in.nextLine();
+						if (!dni.equals("-1")) {
+							listado = Conexion.obtenerContratosFutbolista(dni, _error);
+							
+							if (_error[0].equals("")) {
+								mostrarTablaContratos(listado);
+								dni = "-1";
 							}
-						} while (!dni.equals("-1") && _error[0].equals(""));
+						}
+						
+						break;
+						
+					case 3: // Visualizar futbolistas en activo
+						System.out.print("> Introduzca el ID del equipo a mostrar sus jugadores en activo o -1 para cancelar: ");
+						idEquipo = in.nextInt();
+
+						System.out.print("> Indique el precio anual del jugador: ");
+						activosPrecioAnual = in.nextInt();
+							
+						System.out.print("> Indique el precio de recisión: ");
+						activosPrecioRecision = in.nextInt();
+							
+						_result = Conexion.obtenerContratosEnActivo(idEquipo, activosPrecioAnual, activosPrecioRecision, _error);
+
+						if (_error[0].equals(""))
+							mostrarTablaContratosActivos(_result);
 						
 						break;
 
@@ -237,6 +254,14 @@ public abstract class Menu {
 	 */
 	private static void mostrarMenuInsertarEquipo() {
 		System.out.println();
+		System.out.println("########################");
+		System.out.printf("#%22s#%n", "");
+		System.out.println("#    INSERTAR EQUIPO   #");
+		System.out.printf("#%22s#%n", "");
+		System.out.println("########################");
+		System.out.println();
+		System.out.println("- Autor: César Ravelo Martínez\n");
+		
 		System.out.println("1) Dar datos del equipo");
 		System.out.println("2) Mostrar ligas con sus identificadores");
 		System.out.println("0) Cancelar operación");
@@ -313,6 +338,14 @@ public abstract class Menu {
 	 */
 	private static void mostrarMenuFunciones() {
 		System.out.println();
+		System.out.println("########################");
+		System.out.printf("#%22s#%n", "");
+		System.out.println("#    FUNCIONES EXTRA   #");
+		System.out.printf("#%22s#%n", "");
+		System.out.println("########################");
+		System.out.println();
+		System.out.println("- Autor: César Ravelo Martínez\n");
+		
 		System.out.println("1) Insertar un equipo");
 		System.out.println("2) Visualizar todos los contratos según un DNI o NIE");
 		System.out.println("3) Visualizar la cantidad de futbolistas en activo");
@@ -330,6 +363,16 @@ public abstract class Menu {
 	 */
 	private static void mostrarTablaContratos(ArrayList<Registro> listado) {
 		mostrarTablaDatos(listado, new String[] {"id", "equipo", "nomLiga", "fechaInicio", "fechaFin", "precioAnual", "precioRecision"}, "%n%5s | %-40s | %-50s | %-11s | %-11s | %-11s | %-11s");
+	}
+	
+	private static void mostrarTablaContratosActivos(int[] _dato) {
+		System.out.println();
+		if (_dato == null)
+			System.out.println("No hay datos que mostrar.");
+		else {
+			System.out.println("# Cantidad de contratos en activos: " + _dato[0]);
+			System.out.println("# Cantidad de contratos en activos con criterios dados: " + _dato[1]);
+		}
 	}
 
 	/**

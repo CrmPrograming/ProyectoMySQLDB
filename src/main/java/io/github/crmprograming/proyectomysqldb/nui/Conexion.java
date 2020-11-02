@@ -468,6 +468,37 @@ public abstract class Conexion {
 		}
 		
 		return listado;
-	}	
+	}
+	
+	public static int[] obtenerContratosEnActivo(int idEquipo, int activosPrecioAnual, int activosPrecioRecision, String[] _error) {
+		int[] result = null;
+		Connection con = conectar(_error);
+		
+		if (_error[0].equals("")) {
+			try {
+				CallableStatement stmt = con.prepareCall("Call futbolistasActivos(?, ?, ?, ?, ?)");
+				stmt.setInt(1, idEquipo);
+				stmt.setInt(2, activosPrecioAnual);
+				stmt.setInt(3, activosPrecioRecision);
+				stmt.registerOutParameter(4, Types.INTEGER);
+				stmt.registerOutParameter(5, Types.INTEGER);
+				stmt.execute();
+				
+				if (stmt.getInt(4) != -1 && stmt.getInt(5) != -1) {
+					result = new int[] {stmt.getInt(4), stmt.getInt(5)};
+				}
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al buscar los contratos: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return result;
+	}
 
 }
