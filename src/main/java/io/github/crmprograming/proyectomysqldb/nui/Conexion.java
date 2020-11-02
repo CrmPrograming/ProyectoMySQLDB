@@ -501,4 +501,32 @@ public abstract class Conexion {
 		return result;
 	}
 
+	public static int obtenerMesesActivosFutbolista(String dni, String[] _error) {
+		int result = 0;
+		Connection con = conectar(_error);
+		
+		if (_error[0].equals("")) {
+			try {
+				ResultSet row;
+				PreparedStatement stmt = con.prepareCall("SELECT fnTotalMeses(?)");
+				stmt.setString(1, dni);				
+				row = stmt.executeQuery();
+				
+				if (row.next()) {
+					result = row.getInt(1);
+				}
+			} catch (SQLException e) {
+				_error[0] = "Se ha producido un error al buscar los contratos: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return result;
+	}
+
 }

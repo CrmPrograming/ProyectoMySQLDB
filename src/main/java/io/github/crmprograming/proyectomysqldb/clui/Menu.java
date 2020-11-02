@@ -50,6 +50,7 @@ public abstract class Menu {
 		Equipo actual;
 		int activosPrecioAnual, activosPrecioRecision;
 		int[] _result;
+		int totalMeses;
 
 		do {
 			_error = new String[] { "" };
@@ -229,6 +230,21 @@ public abstract class Menu {
 							mostrarTablaContratosActivos(_result);
 						
 						break;
+						
+					case 4: // Mostrar total de meses activos de un futbolista
+						in.nextLine();
+						
+						System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
+						dni = in.nextLine();
+						if (!dni.equals("-1")) {
+							totalMeses = Conexion.obtenerMesesActivosFutbolista(dni, _error);
+							
+							if (_error[0].equals("")) {
+								mostrarTotalMesesActivo(totalMeses);
+								dni = "-1";
+							}
+						}
+						break;
 
 					default:
 						System.out.println("- Opción introducida no válida");
@@ -373,6 +389,13 @@ public abstract class Menu {
 			System.out.println("# Cantidad de contratos en activos: " + _dato[0]);
 			System.out.println("# Cantidad de contratos en activos con criterios dados: " + _dato[1]);
 		}
+	}
+	
+	private static void mostrarTotalMesesActivo(int totalMeses) {
+		if (totalMeses == 0)
+			System.out.println("# No ha estado ningún mes en activo");
+		else
+			System.out.println("# Total meses en activo: " + totalMeses);
 	}
 
 	/**
