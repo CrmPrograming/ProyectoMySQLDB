@@ -38,10 +38,10 @@ public abstract class Menu {
 
 	/**
 	 * Método encargado de gestionar el menú principal de la aplicación.
+	 * @param in 
 	 */
-	private static void gestionarMenuInicial() {
+	private static void gestionarMenuInicial(Scanner in) {
 		ArrayList<Registro> listado;
-		Scanner in = new Scanner(System.in);
 		int opc = -1;
 		String[] _error;
 		String nomEquipo, codLiga, localidad, dni;
@@ -174,84 +174,86 @@ public abstract class Menu {
 				break;
 				
 			case 5:
-				opc = -1;
-				do {
-					mostrarMenuFunciones();
-					opc = in.nextInt();
-
-					switch (opc) {
-					case 0:
-						break;
-					case 1: // Pedir datos del equipo
-						in.nextLine();
-
-						System.out.print("> Nombre del equipo (LIMIT 40): ");
-						nomEquipo = in.nextLine();
-						System.out.print("> Código de la liga (LIMIT 5): ");
-						codLiga = in.nextLine();
-						System.out.print("> Localidad del equipo (LIMIT 60): ");
-						localidad = in.nextLine();
-						System.out.print("> ¿El equipo es internacional? (s|n): ");
-						internacional = in.nextLine().toUpperCase().equals("S");
-						System.out.println();
-
-						if (Conexion.insertarEquipoFunciones(new Equipo(-1, nomEquipo, codLiga, null, localidad, internacional), _error))
-							System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas.");
-						break;
-					case 2: // Visualizar todos los contratos
-						in.nextLine();
-						
-						System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
-						dni = in.nextLine();
-						if (!dni.equals("-1")) {
-							listado = Conexion.obtenerContratosFutbolista(dni, _error);
+				if (Conexion.conexionDefinida != Conexion.TIPO_CONEXION.ACCESS) {
+					opc = -1;
+					do {
+						mostrarMenuFunciones();
+						opc = in.nextInt();
+	
+						switch (opc) {
+						case 0:
+							break;
+						case 1: // Pedir datos del equipo
+							in.nextLine();
+	
+							System.out.print("> Nombre del equipo (LIMIT 40): ");
+							nomEquipo = in.nextLine();
+							System.out.print("> Código de la liga (LIMIT 5): ");
+							codLiga = in.nextLine();
+							System.out.print("> Localidad del equipo (LIMIT 60): ");
+							localidad = in.nextLine();
+							System.out.print("> ¿El equipo es internacional? (s|n): ");
+							internacional = in.nextLine().toUpperCase().equals("S");
+							System.out.println();
+	
+							if (Conexion.insertarEquipoFunciones(new Equipo(-1, nomEquipo, codLiga, null, localidad, internacional), _error))
+								System.out.println("Se ha dado de alta el equipo " + nomEquipo + " sin problemas.");
+							break;
+						case 2: // Visualizar todos los contratos
+							in.nextLine();
 							
-							if (_error[0].equals("")) {
-								mostrarTablaContratos(listado);
-								dni = "-1";
+							System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
+							dni = in.nextLine();
+							if (!dni.equals("-1")) {
+								listado = Conexion.obtenerContratosFutbolista(dni, _error);
+								
+								if (_error[0].equals("")) {
+									mostrarTablaContratos(listado);
+									dni = "-1";
+								}
 							}
-						}
-						
-						break;
-						
-					case 3: // Visualizar futbolistas en activo
-						System.out.print("> Introduzca el ID del equipo a mostrar sus jugadores en activo o -1 para cancelar: ");
-						idEquipo = in.nextInt();
-
-						System.out.print("> Indique el precio anual del jugador: ");
-						activosPrecioAnual = in.nextInt();
 							
-						System.out.print("> Indique el precio de recisión: ");
-						activosPrecioRecision = in.nextInt();
+							break;
 							
-						_result = Conexion.obtenerContratosEnActivo(idEquipo, activosPrecioAnual, activosPrecioRecision, _error);
-
-						if (_error[0].equals(""))
-							mostrarTablaContratosActivos(_result);
-						
-						break;
-						
-					case 4: // Mostrar total de meses activos de un futbolista
-						in.nextLine();
-						
-						System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
-						dni = in.nextLine();
-						if (!dni.equals("-1")) {
-							totalMeses = Conexion.obtenerMesesActivosFutbolista(dni, _error);
+						case 3: // Visualizar futbolistas en activo
+							System.out.print("> Introduzca el ID del equipo a mostrar sus jugadores en activo o -1 para cancelar: ");
+							idEquipo = in.nextInt();
+	
+							System.out.print("> Indique el precio anual del jugador: ");
+							activosPrecioAnual = in.nextInt();
+								
+							System.out.print("> Indique el precio de recisión: ");
+							activosPrecioRecision = in.nextInt();
+								
+							_result = Conexion.obtenerContratosEnActivo(idEquipo, activosPrecioAnual, activosPrecioRecision, _error);
+	
+							if (_error[0].equals(""))
+								mostrarTablaContratosActivos(_result);
 							
-							if (_error[0].equals("")) {
-								mostrarTotalMesesActivo(totalMeses);
-								dni = "-1";
+							break;
+							
+						case 4: // Mostrar total de meses activos de un futbolista
+							in.nextLine();
+							
+							System.out.print("> Indique el DNI o NIE del futbolista (-1 para cancelar): ");
+							dni = in.nextLine();
+							if (!dni.equals("-1")) {
+								totalMeses = Conexion.obtenerMesesActivosFutbolista(dni, _error);
+								
+								if (_error[0].equals("")) {
+									mostrarTotalMesesActivo(totalMeses);
+									dni = "-1";
+								}
 							}
+							break;
+	
+						default:
+							System.out.println("- Opción introducida no válida");
 						}
-						break;
-
-					default:
-						System.out.println("- Opción introducida no válida");
-					}
-
-				} while (opc != 0 && _error[0].equals(""));
-				opc = 5;
+	
+					} while (opc != 0 && _error[0].equals(""));
+					opc = 5;
+				}
 				break;
 
 			default:
@@ -413,8 +415,32 @@ public abstract class Menu {
 	 */
 	public static void iniciar() {
 		try {
-			Conexion.init("config.properties");
-			gestionarMenuInicial();
+			Scanner in = new Scanner(System.in);
+			int opc = -1;
+			System.out.println("Antes de comenzar, es necesario especificar qué tipo de conexión se hará.");
+			System.out.println("1) MySQL");
+			System.out.println("2) SQLServer");
+			System.out.println("3) Access");
+			System.out.println("0) Salir\n");
+			System.out.print("Indique qué opción le interesa: ");
+			opc = in.nextInt();
+			
+			switch (opc) {
+				case 1:
+					Conexion.init("configMySQL.properties", Conexion.TIPO_CONEXION.MYSQL);					
+					break;
+				case 2:
+					Conexion.init("configSQLServer.properties", Conexion.TIPO_CONEXION.SQLSERVER);
+					break;
+				case 3:					
+					break;
+				case 0:
+					System.out.println("Se cerrará la aplicación sin problemas.");
+					break;
+			}
+			
+			if (opc > 0 && opc < 4)
+				gestionarMenuInicial(in);
 		} catch (IOException e) {
 			System.err.println("La aplicación no se pudo iniciar. " + e.getLocalizedMessage());
 		}

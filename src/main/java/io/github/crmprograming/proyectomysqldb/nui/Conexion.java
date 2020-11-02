@@ -25,6 +25,16 @@ import java.util.HashMap;
  */
 public abstract class Conexion {
 	
+	public enum TIPO_CONEXION {
+		MYSQL,
+		SQLSERVER,
+		ACCESS
+	}
+	
+	public static TIPO_CONEXION conexionDefinida;
+	
+	private static String ejecProcedimiento;
+	
 	private static HashMap<String, String> datosConexion;
 	
 	/**
@@ -36,22 +46,25 @@ public abstract class Conexion {
 	 * 
 	 * La estructura válida del fichero debe ser:
 	 * 
-	 * usuario=[dato1]
-	 * passwd=[dato2]
-	 * bd_nombre=[dato3]
-	 * hostname=[dato4]
+	 * driver=[dato1]
+	 * url=[dato2]
+	 * usuario=[dato3]
+	 * passwd=[dato4]
+	 * bd_nombre=[dato5]
+	 * hostname=[dato6]
 	 * 
 	 * Si alguno de los parámetros no tiene valor, dejar en blanco sin eliminar
 	 * el campo asociado.
 	 * 
 	 * @param fichero Ruta del fichero dentro de la carpeta de recursos.
+	 * @param mysql 
 	 * @throws IOException
 	 */
-	public static void init(String fichero) throws IOException {
+	public static void init(String fichero, TIPO_CONEXION tConexion) throws IOException {
 		InputStream inputStream = Conexion.class.getClassLoader().getResourceAsStream(fichero);
 		InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
 		BufferedReader reader = new BufferedReader(streamReader);
-		ArrayList<String> cabeceras = new ArrayList<String>(Arrays.asList("usuario", "passwd", "bd_nombre", "hostname"));
+		ArrayList<String> cabeceras = new ArrayList<String>(Arrays.asList("driver", "url", "usuario", "passwd", "bd_nombre", "hostname"));
 		String linea;
 		String[] _parametro;
 		boolean validado = true;
@@ -69,6 +82,10 @@ public abstract class Conexion {
 		
 		if (!validado)
 			throw new IOException("Fichero de configuración alterado o mal construido");
+		
+		conexionDefinida = tConexion;
+		
+		ejecProcedimiento = ((conexionDefinida == TIPO_CONEXION.MYSQL)?"Call":"Exec");
 	}
 	
 	/**
@@ -83,12 +100,28 @@ public abstract class Conexion {
 	private static Connection conectar(String[] _error) {
 		Connection con = null;
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://"
-												+ datosConexion.get("hostname") + "/"
-												+ datosConexion.get("bd_nombre"),
-												datosConexion.get("usuario"),
-												datosConexion.get("passwd"));
+			Class.forName(datosConexion.get("driver"));
+			
+			switch (conexionDefinida) {
+				case MYSQL:
+					con = DriverManager.getConnection(datosConexion.get("url")
+							+ datosConexion.get("hostname") + "/"
+							+ datosConexion.get("bd_nombre"),
+							datosConexion.get("usuario"),
+							datosConexion.get("passwd"));
+					break;
+				case SQLSERVER:
+					con = DriverManager.getConnection(datosConexion.get("url")
+							+ datosConexion.get("hostname") + ";DataBaseName="
+							+ datosConexion.get("bd_nombre"),
+							datosConexion.get("usuario"),
+							datosConexion.get("passwd"));
+					break;
+				case ACCESS:
+					break;
+				default:
+					break;
+			}
 		} catch (Exception e) {
 			_error[0] = "Se ha producido un error en la conexión: " + e.getLocalizedMessage();
 		}
@@ -398,7 +431,7 @@ public abstract class Conexion {
 		
 		if (result = _error[0].equals("")) {
 			try {
-				CallableStatement stmt = con.prepareCall("Call insertarEquipo(?, ?, ?, ?, ?, ?)");
+				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " insertarEquipo(?, ?, ?, ?, ?, ?)");
 				stmt.setString(1, equipo.getNomEquipo());
 				stmt.setString(2, equipo.getCodLiga());
 				stmt.setString(3, equipo.getLocalidad());
@@ -446,7 +479,7 @@ public abstract class Conexion {
 			try {
 				ResultSet rows;
 				ResultSetMetaData rMeta;
-				CallableStatement stmt = con.prepareCall("Call listarContratoFutbolista(?)");
+				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " listarContratoFutbolista(?)");
 				stmt.setString(1, dni);
 				rows = stmt.executeQuery();
 				rMeta = rows.getMetaData();
@@ -495,7 +528,7 @@ public abstract class Conexion {
 		
 		if (_error[0].equals("")) {
 			try {
-				CallableStatement stmt = con.prepareCall("Call futbolistasActivos(?, ?, ?, ?, ?)");
+				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " futbolistasActivos(?, ?, ?, ?, ?)");
 				stmt.setInt(1, idEquipo);
 				stmt.setInt(2, activosPrecioAnual);
 				stmt.setInt(3, activosPrecioRecision);
