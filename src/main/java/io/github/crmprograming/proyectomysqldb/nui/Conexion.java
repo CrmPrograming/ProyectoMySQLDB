@@ -430,6 +430,14 @@ public abstract class Conexion {
 		return result;
 	}
 
+	
+	/**
+	 * Método encargado de obtener los contratos de un futbolista dado.
+	 *
+	 * @param dni DNI o NIE del jugador
+	 * @param _error Array de String con los posibles errores que pudiera dar la operación
+	 * @return ArrayList con los contratos conseguidos
+	 */
 	public static ArrayList<Registro> obtenerContratosFutbolista(String dni, String[] _error) {
 		ArrayList<Registro> listado = new ArrayList<Registro>();
 		Connection con = conectar(_error);
@@ -470,6 +478,17 @@ public abstract class Conexion {
 		return listado;
 	}
 	
+	/**
+	 * Método encargado de obtener la cantidad de contratos en activo que tiene
+	 * el jugador indicado junto con los criterios especificados para su precio anual
+	 * y precio de recisión.
+	 *
+	 * @param idEquipo Código del equipo al que pertenece el jugador
+	 * @param activosPrecioAnual Precio anual máximo
+	 * @param activosPrecioRecision Precio de recisión máximo
+	 * @param _error Array de String con los posibles errores que pudiera dar la operación
+	 * @return array con los valores obtenidos en sus posiciones 0 y 1. Puede valer null en caso de error
+	 */
 	public static int[] obtenerContratosEnActivo(int idEquipo, int activosPrecioAnual, int activosPrecioRecision, String[] _error) {
 		int[] result = null;
 		Connection con = conectar(_error);
@@ -501,6 +520,14 @@ public abstract class Conexion {
 		return result;
 	}
 
+	
+	/**
+	 * Método encargado de obtener los meses activos totales de un futbolista.
+	 *
+	 * @param dni DNI o NIE del futbolista
+	 * @param _error Array de String con los posibles errores que pudiera dar la operación
+	 * @return Int con el total de meses activos
+	 */
 	public static int obtenerMesesActivosFutbolista(String dni, String[] _error) {
 		int result = 0;
 		Connection con = conectar(_error);

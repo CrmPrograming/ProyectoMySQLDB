@@ -381,6 +381,11 @@ public abstract class Menu {
 		mostrarTablaDatos(listado, new String[] {"id", "equipo", "nomLiga", "fechaInicio", "fechaFin", "precioAnual", "precioRecision"}, "%n%5s | %-40s | %-50s | %-11s | %-11s | %-11s | %-11s");
 	}
 	
+	/**
+	 * Método encargado de mostrar la tabla con los contratos activos.
+	 * 
+	 * @param _dato Array con los datos a mostrar; en el índice 0 el total general y en el 1 el total según criterio
+	 */
 	private static void mostrarTablaContratosActivos(int[] _dato) {
 		System.out.println();
 		if (_dato == null)
@@ -391,6 +396,11 @@ public abstract class Menu {
 		}
 	}
 	
+	/**
+	 * Método encargado de mostrar el total de meses en activo de un jugador
+	 * 
+	 * @param totalMeses Total de meses activos
+	 */
 	private static void mostrarTotalMesesActivo(int totalMeses) {
 		if (totalMeses == 0)
 			System.out.println("# No ha estado ningún mes en activo");
