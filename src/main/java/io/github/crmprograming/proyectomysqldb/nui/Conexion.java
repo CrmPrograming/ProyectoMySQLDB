@@ -444,7 +444,7 @@ public abstract class Conexion {
 		
 		if (result = _error[0].equals("")) {
 			try {
-				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " insertarEquipo(?, ?, ?, ?, ?, ?)");
+				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " " + ((Conexion.conexionDefinida == Conexion.TIPO_CONEXION.SQLSERVER)?"dbo.":"")  + "insertarEquipo(?, ?, ?, ?, ?, ?)");
 				stmt.setString(1, equipo.getNomEquipo());
 				stmt.setString(2, equipo.getCodLiga());
 				stmt.setString(3, equipo.getLocalidad());
@@ -492,7 +492,7 @@ public abstract class Conexion {
 			try {
 				ResultSet rows;
 				ResultSetMetaData rMeta;
-				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " listarContratoFutbolista(?)");
+				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " " + ((Conexion.conexionDefinida == Conexion.TIPO_CONEXION.SQLSERVER)?"dbo.":"")  + "listarContratoFutbolista(?)");
 				stmt.setString(1, dni);
 				rows = stmt.executeQuery();
 				rMeta = rows.getMetaData();
@@ -541,7 +541,7 @@ public abstract class Conexion {
 		
 		if (_error[0].equals("")) {
 			try {
-				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " futbolistasActivos(?, ?, ?, ?, ?)");
+				CallableStatement stmt = con.prepareCall(ejecProcedimiento + " " + ((Conexion.conexionDefinida == Conexion.TIPO_CONEXION.SQLSERVER)?"dbo.":"")  + "futbolistasActivos(?, ?, ?, ?, ?)");
 				stmt.setInt(1, idEquipo);
 				stmt.setInt(2, activosPrecioAnual);
 				stmt.setInt(3, activosPrecioRecision);
@@ -581,7 +581,7 @@ public abstract class Conexion {
 		if (_error[0].equals("")) {
 			try {
 				ResultSet row;
-				PreparedStatement stmt = con.prepareCall("SELECT fnTotalMeses(?)");
+				PreparedStatement stmt = con.prepareCall("SELECT " + ((Conexion.conexionDefinida == Conexion.TIPO_CONEXION.SQLSERVER)?"dbo.":"")  + "fnTotalMeses(?)");
 				stmt.setString(1, dni);				
 				row = stmt.executeQuery();
 				
