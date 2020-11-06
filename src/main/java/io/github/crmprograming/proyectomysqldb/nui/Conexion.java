@@ -12,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -278,7 +277,7 @@ public abstract class Conexion {
 	 * Método encargado de comprobar si el equipo dado existe en la base de datos.
 	 *
 	 * @param codEquipo Código del equipo a consultar
-	 * @param con Conexión a la base de datos
+	 * @param _error Array de String con los posibles errores que pudiera dar la operación
 	 * @return booleano con el estado resultante de la operación
 	 * @throws SQLException
 	 */
@@ -307,6 +306,43 @@ public abstract class Conexion {
 		}
 		return result;
 	}
+	
+	/**
+	 * Método encargado de comprobar si el equipo indicado tiene contratos
+	 * vinculados a él.
+	 * 
+	 * @param idEquipo ID del equipo a comprobar
+	 * @param _error Array de String con los posibles errores que pudiera dar la operación 
+	 * @return true si el equipo dado tiene mínimo un contrato
+	 */
+	public static boolean tieneContratos(int idEquipo, String[] _error) {
+		boolean result;
+		Connection con = conectar(_error);
+		
+		if (result = _error[0].equals("")) {
+			try {
+				ResultSet row;
+				PreparedStatement stmt = con.prepareStatement("SELECT COUNT(*) AS total FROM contratos WHERE codEquipo = ?");
+				stmt.setInt(1, idEquipo);
+				row = stmt.executeQuery();
+				
+				if (row.next()) {
+					result = (row.getInt("total") > 0);
+				} 
+			} catch (SQLException e) {
+				result = false;
+				_error[0] = "Se ha producido un error al comprobar los contratos del equipo: " + e.getLocalizedMessage();
+			} finally {
+				try {
+					con.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return result;
+	}
 
 	/**
 	 * Método encargado de borrar el equipo dado de la base de datos.
@@ -321,15 +357,16 @@ public abstract class Conexion {
 		
 		if (result = _error[0].equals("")) {
 			try {
-				PreparedStatement stmt = con.prepareStatement("DELETE FROM equipos WHERE codEquipo = ?");
+				PreparedStatement stmt = con.prepareStatement("DELETE FROM contratos WHERE codEquipo = ?");
 				stmt.setInt(1, idEquipo);
-				result = (stmt.executeUpdate() > 0);
-			} catch (SQLIntegrityConstraintViolationException e) {
-				result = false;
-				_error[0] = "No se puede borrar el equipo " + idEquipo + ": El equipo está siendo referenciado en otra(s) tabla(s)";
+				stmt.execute();
+				
+				stmt = con.prepareStatement("DELETE FROM equipos WHERE codEquipo = ?");
+				stmt.setInt(1, idEquipo);
+				result = (stmt.executeUpdate() > 0);				
 			} catch (SQLException e) {
 				result = false;
-				_error[0] = "Se ha producido un error al borrar el equipo: " + e.getLocalizedMessage();
+				_error[0] = "Se ha producido un error al hacer rollback en el borrado del equipo: " + e.getLocalizedMessage();
 			} finally {
 				try {
 					con.close();

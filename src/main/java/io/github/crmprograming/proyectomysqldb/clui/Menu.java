@@ -117,6 +117,9 @@ public abstract class Menu {
 						if (Conexion.isEquipoExiste(idEquipo, _error)) {
 							actual = Conexion.obtenerEquipo(idEquipo, _error);
 							mostrarTablaEquipos(new ArrayList<Registro>(Arrays.asList(actual)));
+							if (Conexion.tieneContratos(idEquipo, _error)) {
+								System.out.println("\nEl equipo indicado tiene contratos vinculados a él.");
+							}
 							if (confirmarBorrado(in) && Conexion.borrarEquipo(idEquipo, _error))
 								System.out.printf("Se ha borrado el equipo %d correctamente%n", idEquipo);
 						} else if (_error[0].equals(""))
@@ -174,7 +177,7 @@ public abstract class Menu {
 				} while (idEquipo != -1);
 				break;
 				
-			case 5:
+			case 5: // Funcionalidades adicionales
 				if (Conexion.conexionDefinida != Conexion.TIPO_CONEXION.ACCESS) {
 					opc = -1;
 					do {
@@ -346,7 +349,7 @@ public abstract class Menu {
 	private static boolean confirmarBorrado(Scanner in) {
 		in.nextLine();
 		System.out.println();
-		System.out.print("> ¿Está seguro de que quiere borrar el equipo? (s|n) ");
+		System.out.print("> ¿Está seguro de que quiere borrar el equipo y todo lo relacionado a él? (s|n) ");
 		
 		return in.nextLine().toUpperCase().equals("S");
 	}
