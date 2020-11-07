@@ -542,6 +542,7 @@ public abstract class Conexion {
 				} else {
 					stmt = con.prepareCall(ejecProcedimiento + " listarContratoFutbolista(?)");
 				}
+				
 				stmt.setString(1, dni);
 				rows = stmt.executeQuery();
 				rMeta = rows.getMetaData();
@@ -638,9 +639,9 @@ public abstract class Conexion {
 				ResultSet row;
 				PreparedStatement stmt;
 				if (Conexion.conexionDefinida == Conexion.TIPO_CONEXION.SQLSERVER) {
-					stmt = con.prepareCall(ejecProcedimiento + " dbo.fnTotalMeses ?");
+					stmt = con.prepareCall("SELECT dbo.fnTotalMeses(?)");
 				} else {
-					stmt = con.prepareCall(ejecProcedimiento + " fnTotalMeses(?)");
+					stmt = con.prepareCall("SELECT fnTotalMeses(?)");
 				}
 				
 				stmt.setString(1, dni);				
