@@ -11,8 +11,9 @@
 	<description>Práctica para la conexión a una base de datos MySQL.</description>
 
 	<properties>
-		<maven.compiler.target>11</maven.compiler.target>
-		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>14</maven.compiler.target>
+		<maven.compiler.source>14</maven.compiler.source>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<exec.mainClass>io.github.crmprograming.proyectomysqldb.Main</exec.mainClass>
 	</properties>
 
