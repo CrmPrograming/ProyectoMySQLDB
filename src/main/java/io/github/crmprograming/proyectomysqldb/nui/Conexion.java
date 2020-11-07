@@ -234,7 +234,7 @@ public abstract class Conexion {
 			try {
 				// Comprobamos primero si la liga dada existe
 				if (isLigaExiste(equipo.getCodLiga(), con)) {
-					PreparedStatement stmt = con.prepareStatement("INSERT INTO equipos VALUES (NULL, ?, ?, ?, ?)");
+					PreparedStatement stmt = con.prepareStatement("INSERT INTO equipos (nomEquipo, codLiga, localidad, internacional) VALUES (?, ?, ?, ?)");
 					stmt.setString(1, equipo.getNomEquipo());
 					stmt.setString(2, equipo.getCodLiga());
 					stmt.setString(3, equipo.getLocalidad());
